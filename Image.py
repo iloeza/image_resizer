@@ -19,8 +19,7 @@ class Photo:
 
     def get_new_hight(self):
         # A little something borrowed from https://stackoverflow.com/a/451580
-        basewidth = 750
-        width_percent = basewidth / float(self.__image.size[0])
+        width_percent = self.__basewidth / float(self.__image.size[0])
         return int((float(self.__image.size[1]) * float(width_percent)))
 
     def validate_image_type(self):
