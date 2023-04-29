@@ -1,15 +1,16 @@
 from PIL import Image
 import sys
+import argparse
 
 class Photo:
     
     allowed_formats = ["jpg", "png", "jpeg"]
 
-    def __init__(self, image_path, output_dir, quality = 100,  basewidth = 750) -> None:
+    def __init__(self, image_path, output_dir, *args, **kwargs) -> None:
         self.__image_path = image_path
         self.__output_dir = output_dir
-        self.__basewidth = basewidth
-        self.__quality = quality
+        self.__basewidth = kwargs['basewidth']
+        self.__quality = kwargs['quality']
         self.__image_name = self.format_image_name()[0]
         self.__image_type = self.format_image_name()[1]
         self.__image = Image.open(self.__image_path)
@@ -26,7 +27,7 @@ class Photo:
         if self.__image_type not in self.allowed_formats:
             raise TypeError("Invalid image format, only JPG and PNG allowed")            
 
-    def resized_image(self):
+    def resize_image(self):
         new_hight = self.get_new_hight()
         self.__image = self.__image.resize((self.__basewidth, new_hight))
 
@@ -37,7 +38,16 @@ class Photo:
 
 if __name__ == "__main__":
 
-    image = Photo(sys.argv[1], sys.argv[2], 90, 750)
+    parser = argparse.ArgumentParser(
+        description="Resize an image in size and quality"
+    )
+    parser.add_argument('image_path')
+    parser.add_argument('output_directory')
+    parser.add_argument('--quality', type=int, default=85, help="Define image's quality. Defaults to 85.")
+    parser.add_argument('--basewidth', type=int, default=750, help="Define image's basewidth. Defaults to 750px.")
+    args = parser.parse_args()
+
+    image = Photo(args.image_path, args.output_directory, quality=args.quality, basewidth=args.basewidth)
     image.validate_image_type()
-    image.resized_image()
+    image.resize_image()
     image.save_image()
